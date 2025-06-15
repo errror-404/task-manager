@@ -55,7 +55,6 @@ const CardFooter: React.FC<{ children: ReactNode; className?: string }> = ({
   className,
 }) => <div className={cn("mt-4", className)}>{children}</div>;
 
-// --- Export compound structure ---
 export const Card = Object.assign(CardRoot, {
   Header: CardHeader,
   Body: CardBody,

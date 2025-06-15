@@ -1,9 +1,12 @@
 import { DashboardLayout } from "../components/DashboardLayout";
+import { KanbanBoard } from "../components/KanbanBoard";
 
 export const DashboardPage = () => {
   return (
     <DashboardLayout>
-      <div> DashboardPage</div>
+      <div>
+        <KanbanBoard />
+      </div>
     </DashboardLayout>
   );
 };

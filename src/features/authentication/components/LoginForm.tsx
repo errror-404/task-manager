@@ -4,7 +4,6 @@ import { TextInput } from "../../../shared/components/TextInput";
 
 export const LoginForm = () => {
   const handleLogin = () => {
-    //navigate to dashboard
     console.log("Navigating to dashboard");
 
     window.location.href = "/";
