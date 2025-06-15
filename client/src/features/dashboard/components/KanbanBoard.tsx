@@ -1,8 +1,8 @@
 import React from "react";
 import { PlusCircle } from "lucide-react";
-import { KanbanColumn } from "../components/KanbanColumn";
-import { SearchBar } from "../components/SearchBar";
-import { TaskModal } from "../components/TaskModal";
+import { KanbanColumn } from "./KanbanColumn";
+import { SearchBar } from "./SearchBar";
+import { TaskModal } from "./TaskModal";
 import { TaskDetailModal } from "./TaskDetailModal";
 import { useKanbanBoard } from "../hooks/useKanbanBoard";
 
