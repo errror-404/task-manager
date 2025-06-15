@@ -1,3 +1,9 @@
+import { DashboardLayout } from "../components/DashboardLayout";
+
 export const DashboardPage = () => {
-  return <div className=" bg-amber-100">DashboardPage</div>;
+  return (
+    <DashboardLayout>
+      <div> DashboardPage</div>
+    </DashboardLayout>
+  );
 };

@@ -3,6 +3,13 @@ import { Card } from "../../../shared/components/Card";
 import { TextInput } from "../../../shared/components/TextInput";
 
 export const LoginForm = () => {
+  const handleLogin = () => {
+    //navigate to dashboard
+    console.log("Navigating to dashboard");
+
+    window.location.href = "/";
+  };
+
   return (
     <Card variant="shadow">
       <Card.Header>
@@ -21,7 +28,7 @@ export const LoginForm = () => {
 
       <Card.Footer>
         <div className="flex flex-col gap-3">
-          <Button onClick={() => console.log("click")}>Entrar</Button>
+          <Button onClick={() => handleLogin()}>Entrarr</Button>
           <p className="text-center text-sm text-gray-500">
             ¿No tienes una cuenta?{" "}
             <a href="/register" className="text-blue-600 hover:underline">
