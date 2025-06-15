@@ -24,7 +24,7 @@ export const LoginForm = () => {
           <Button onClick={() => console.log("click")}>Entrar</Button>
           <p className="text-center text-sm text-gray-500">
             ¿No tienes una cuenta?{" "}
-            <a href="#" className="text-blue-600 hover:underline">
+            <a href="/register" className="text-blue-600 hover:underline">
               Registrate
             </a>
           </p>
