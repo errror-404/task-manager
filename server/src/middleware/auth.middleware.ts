@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils/jwt";
+import { NextFunction, Request, Response } from 'express';
+import { verifyToken } from '../utils/jwt';
 
 interface JwtPayload {
   id: string;
@@ -8,16 +8,17 @@ interface JwtPayload {
   exp: number;
 }
 
-export function authMiddleware(
+export const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
-) {
+) => {
   const auth = req.headers.authorization;
-  if (!auth?.startsWith("Bearer "))
-    return res.status(401).json({ message: "Token requerido" });
+  if (!auth?.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Token requerido' });
+  }
 
-  const token = auth.split(" ")[1];
+  const token = auth.split(' ')[1];
   try {
     const decoded = verifyToken(token) as JwtPayload;
     req.user = {
@@ -26,6 +27,6 @@ export function authMiddleware(
     };
     next();
   } catch {
-    return res.status(401).json({ message: "Token inválido" });
+    return res.status(401).json({ message: 'Token inválido' });
   }
-}
+};
