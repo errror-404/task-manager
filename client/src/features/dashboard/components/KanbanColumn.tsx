@@ -48,7 +48,7 @@ export const KanbanColumn = ({
     <div
       onDragOver={(e) => e.preventDefault()}
       onDrop={() => onDrop(id)}
-      className="flex-shrink-0 w-[350px] bg-gray-100 rounded p-4 min-h-[300px] shadow"
+      className="flex-shrink-0 w-full sm:w-[350px] bg-gray-100 rounded p-4 min-h-[300px] shadow snap-start"
     >
       <div className="flex items-center justify-between mb-4">
         {isRenaming ? (

@@ -6,7 +6,6 @@ export const KanbanTask = ({
   task,
   onDragStart,
   onEdit,
-  onDelete,
   onDragEnter,
   onClick,
   onToggleComplete,
@@ -37,7 +36,7 @@ export const KanbanTask = ({
         task.completed ? 'opacity-60 line-through' : ''
       }`}
     >
-      <GripVertical className="w-4 h-4 text-gray-400 mt-1" />
+      <GripVertical className="w-4 h-4 text-gray-400 mt-1 hidden sm:block" />
 
       <div
         onClick={(e) => {
@@ -66,7 +65,7 @@ export const KanbanTask = ({
       ) : (
         <div className="flex-1 flex flex-col">
           <span
-            className="flex-1 text-sm"
+            className="flex-1 text-sm break-words"
             onDoubleClick={() => setIsEditing(true)}
           >
             {task.title}

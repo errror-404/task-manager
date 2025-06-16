@@ -39,7 +39,7 @@ export const KanbanBoard: React.FC = () => {
 
   return (
     <div className="p-4 space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
         <SearchBar value={search} onChange={setSearch} />
         <div className="flex gap-2">
           <button
@@ -52,7 +52,7 @@ export const KanbanBoard: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="flex flex-wrap sm:flex-nowrap gap-4 overflow-x-auto pb-4 snap-x snap-mandatory">
         {columnOrder.map((colId) => (
           <KanbanColumn
             key={colId}

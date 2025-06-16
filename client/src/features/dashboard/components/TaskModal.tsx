@@ -58,7 +58,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   return createPortal(
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
         <h3 className="text-xl font-semibold text-gray-800 mb-6">
           Crear nueva tarea
         </h3>
