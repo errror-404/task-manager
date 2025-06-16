@@ -1,5 +1,5 @@
-import { DashboardLayout } from "../components/DashboardLayout";
-import { KanbanBoard } from "../components/KanbanBoard";
+import { DashboardLayout } from '../components/DashboardLayout';
+import { KanbanBoard } from '../components/KanbanBoard';
 
 export const DashboardPage = () => {
   return (

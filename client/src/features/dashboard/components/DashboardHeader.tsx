@@ -1,9 +1,9 @@
-import { Button } from "../../../shared/components/Button";
+import { Button } from '../../../shared/components/Button';
 import {
   Dropdown,
   DropdownItem,
-} from "../../../shared/components/DropdownMenu";
-import { User as UserIcon } from "lucide-react";
+} from '../../../shared/components/DropdownMenu';
+import { User as UserIcon } from 'lucide-react';
 
 export const DashboardHeader = ({
   user,

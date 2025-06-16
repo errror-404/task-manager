@@ -1,4 +1,4 @@
-import type { Task } from "../models/task.interface";
+import type { Task } from '../models/task.interface';
 
 export function reorderTasksInColumn(
   tasks: Task[],
