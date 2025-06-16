@@ -1,6 +1,7 @@
-import { useState } from "react";
-import type { Columns } from "../models/columns";
-import { reorderTasksInColumn } from "../utils";
+import { useState } from 'react';
+import type { Columns } from '../models/column.interface';
+import { taskService } from '../services/taskService';
+import { reorderTasksInColumn } from '../utils';
 
 export const useDragAndDrop = (
   columns: Columns,
@@ -20,7 +21,7 @@ export const useDragAndDrop = (
     setDragOverTaskId(taskId);
   };
 
-  const handleDrop = (toCol: string) => {
+  const handleDrop = async (toCol: string) => {
     if (!dragged) return;
     const { fromCol, taskId } = dragged;
 
@@ -38,12 +39,20 @@ export const useDragAndDrop = (
       );
       setColumns((prev) => ({ ...prev, [fromCol]: updated }));
     } else {
-      const targetTasks = [...columns[toCol], movedTask];
+      const updatedTask = { ...movedTask, columnId: toCol };
+      const targetTasks = [...(columns[toCol] || []), updatedTask];
+
       setColumns((prev) => ({
         ...prev,
         [fromCol]: sourceTasks,
         [toCol]: targetTasks,
       }));
+      console.log(toCol, 'toCol');
+      try {
+        await taskService.update(taskId, { columnId: toCol });
+      } catch (err) {
+        console.error('Error actualizando columnId en backend:', err);
+      }
     }
 
     setDragged(null);

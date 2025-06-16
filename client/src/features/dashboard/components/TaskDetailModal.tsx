@@ -1,6 +1,6 @@
-import { createPortal } from "react-dom";
-import { useState, useEffect } from "react";
-import type { Task } from "../models/task.interface";
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import type { Task } from '../models/task.interface';
 
 interface Props {
   task: Task;
@@ -20,7 +20,17 @@ export const TaskDetailModal: React.FC<Props> = ({
   const [edited, setEdited] = useState<Task>(task);
 
   useEffect(() => {
-    setEdited(task);
+    const parsedDueDate =
+      typeof task.dueDate === 'string' || typeof task.dueDate === 'number'
+        ? new Date(task.dueDate)
+        : task.dueDate instanceof Date
+          ? task.dueDate
+          : undefined;
+
+    setEdited({
+      ...task,
+      dueDate: parsedDueDate,
+    });
   }, [task]);
 
   const handleSave = () => {
@@ -73,7 +83,7 @@ export const TaskDetailModal: React.FC<Props> = ({
               onChange={(e) =>
                 setEdited({
                   ...edited,
-                  priority: e.target.value as "low" | "medium" | "high",
+                  priority: e.target.value as 'low' | 'medium' | 'high',
                 })
               }
               className="w-full rounded border px-3 py-2 text-sm"
@@ -90,7 +100,12 @@ export const TaskDetailModal: React.FC<Props> = ({
             </label>
             <input
               type="date"
-              value={edited.dueDate?.toISOString().split("T")[0] || ""}
+              value={
+                edited.dueDate instanceof Date &&
+                !isNaN(edited.dueDate.getTime())
+                  ? edited.dueDate.toISOString().split('T')[0]
+                  : ''
+              }
               onChange={(e) =>
                 setEdited({
                   ...edited,

@@ -1,15 +1,16 @@
-import React from "react";
-import { PlusCircle } from "lucide-react";
-import { KanbanColumn } from "./KanbanColumn";
-import { SearchBar } from "./SearchBar";
-import { TaskModal } from "./TaskModal";
-import { TaskDetailModal } from "./TaskDetailModal";
-import { useKanbanBoard } from "../hooks/useKanbanBoard";
+import { PlusCircle } from 'lucide-react';
+import React from 'react';
+import { useKanbanBoard } from '../hooks/useKanbanBoard';
+import { KanbanColumn } from './KanbanColumn';
+import { SearchBar } from './SearchBar';
+import { TaskDetailModal } from './TaskDetailModal';
+import { TaskModal } from './TaskModal';
 
 export const KanbanBoard: React.FC = () => {
   const {
     columns,
     columnOrder,
+    columnMeta,
     selectedTask,
     setSelectedTask,
     handleDragStart,
@@ -51,11 +52,12 @@ export const KanbanBoard: React.FC = () => {
       </div>
 
       <div className="flex gap-4 overflow-x-auto pb-4">
-        {columnOrder.map((colName) => (
+        {columnOrder.map((colId) => (
           <KanbanColumn
-            key={colName}
-            name={colName}
-            tasks={columns[colName]}
+            key={colId}
+            id={colId}
+            name={columnMeta[colId]?.title ?? colId}
+            tasks={columns[colId]}
             onDrop={handleDrop}
             onDragStart={handleDragStart}
             onDragEnter={handleDragEnter}
@@ -69,7 +71,6 @@ export const KanbanBoard: React.FC = () => {
           />
         ))}
 
-        {/* Add Column Card */}
         <div className="flex flex-col items-center justify-center bg-gray-100 min-w-[250px] rounded p-4 border border-dashed border-gray-400 h-fit">
           {isAddingColumn ? (
             <>
@@ -78,9 +79,9 @@ export const KanbanBoard: React.FC = () => {
                 value={newColumnName}
                 onChange={(e) => setNewColumnName(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") handleAddColumn();
-                  if (e.key === "Escape") {
-                    setNewColumnName("");
+                  if (e.key === 'Enter') handleAddColumn();
+                  if (e.key === 'Escape') {
+                    setNewColumnName('');
                     setIsAddingColumn(false);
                   }
                 }}
@@ -97,7 +98,7 @@ export const KanbanBoard: React.FC = () => {
                 </button>
                 <button
                   onClick={() => {
-                    setNewColumnName("");
+                    setNewColumnName('');
                     setIsAddingColumn(false);
                   }}
                   className="text-gray-600 hover:underline text-sm"
@@ -121,6 +122,8 @@ export const KanbanBoard: React.FC = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onAdd={handleAddTask}
+        columnOrder={columnOrder}
+        columnMeta={columnMeta}
       />
 
       {selectedTask && (

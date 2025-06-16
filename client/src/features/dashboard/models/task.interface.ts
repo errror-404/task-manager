@@ -9,6 +9,7 @@ export interface Task {
   status: string;
   createdAt: Date;
   updatedAt: Date;
+  columnId: string;
 }
 
 export interface NewTask {
@@ -19,4 +20,5 @@ export interface NewTask {
   dueDate?: Date;
   userId?: string;
   status?: string;
+  columnId?: string;
 }

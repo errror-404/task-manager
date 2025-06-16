@@ -6,6 +6,14 @@ import {
   updateColumnSchema,
 } from '../validators/column.validator';
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { id: string; email: string };
+    }
+  }
+}
+
 export const getAllColumns = async (req: Request, res: Response) => {
   const userId = req.user!.id;
   const columns = await columnService.getColumns(userId);

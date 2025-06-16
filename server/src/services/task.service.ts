@@ -31,19 +31,41 @@ export async function getTaskById(id: string, userId: string) {
   });
 }
 
-export async function updateTask(id: string, userId: string, data: any) {
+export async function updateTask(
+  id: string,
+  userId: string,
+  data: Partial<{
+    title: string;
+    description: string;
+    priority: 'low' | 'medium' | 'high';
+    dueDate: string | Date | null;
+    completed: boolean;
+    columnId: string;
+  }>
+) {
   const task = await prisma.task.findFirst({
     where: { id, userId },
   });
 
   if (!task) return null;
 
+  const updateData: any = { ...data };
+
+  if ('columnId' in data && data.columnId) {
+    const column = await prisma.column.findFirst({
+      where: { id: data.columnId, userId },
+    });
+
+    if (!column) return null;
+  }
+
+  if ('dueDate' in data) {
+    updateData.dueDate = data.dueDate ? new Date(data.dueDate) : null;
+  }
+
   return await prisma.task.update({
     where: { id },
-    data: {
-      ...data,
-      dueDate: data.dueDate ? new Date(data.dueDate) : null,
-    },
+    data: updateData,
   });
 }
 

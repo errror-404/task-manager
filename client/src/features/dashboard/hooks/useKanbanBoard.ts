@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
-import type { Columns } from '../models/columns';
+import type { Column } from '../models/column.interface';
 import type { NewTask, Task } from '../models/task.interface';
+import { columnService } from '../services/columnService';
 import { taskService } from '../services/taskService';
-import { moveArrayItem, normalizeColumnKey } from '../utils';
+import { moveArrayItem } from '../utils';
 import { useDragAndDrop } from './useDragAndDrop';
+
+export type Columns = Record<string, Task[]>;
 
 export const useKanbanBoard = () => {
   const [columns, setColumns] = useState<Columns>({});
   const [columnOrder, setColumnOrder] = useState<string[]>([]);
+  const [columnMeta, setColumnMeta] = useState<Record<string, Column>>({});
 
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,11 +31,11 @@ export const useKanbanBoard = () => {
   const handleAddTask = async (newTask: NewTask) => {
     try {
       const taskFromServer = await taskService.createTask(newTask);
-      const key = taskFromServer.status || 'todo';
+      const colId = taskFromServer.columnId;
 
       setColumns((prev) => ({
         ...prev,
-        [key]: [taskFromServer, ...(prev[key] || [])],
+        [colId]: [taskFromServer, ...(prev[colId] || [])],
       }));
 
       setIsModalOpen(false);
@@ -40,100 +44,139 @@ export const useKanbanBoard = () => {
     }
   };
 
-  const handleEditTask = (col: string, id: string, newTitle: string) => {
-    setColumns((prev) => ({
-      ...prev,
-      [col]: prev[col].map((task) =>
-        task.id === id
-          ? { ...task, title: newTitle, updatedAt: new Date() }
-          : task
-      ),
-    }));
+  const handleEditTask = async (
+    colId: string,
+    taskId: string,
+    newTitle: string
+  ) => {
+    try {
+      const updated = await taskService.update(taskId, {
+        title: newTitle,
+        updatedAt: new Date(),
+      });
+
+      setColumns((prev) => ({
+        ...prev,
+        [colId]: prev[colId].map((task) =>
+          task.id === taskId ? { ...updated } : task
+        ),
+      }));
+    } catch (error) {
+      console.error('Error actualizando tarea:', error);
+    }
   };
 
-  const handleDeleteTask = (col: string, id: string) => {
-    setColumns((prev) => ({
-      ...prev,
-      [col]: prev[col].filter((task) => task.id !== id),
-    }));
+  const handleDeleteTask = async (colId: string, taskId: string) => {
+    try {
+      await taskService.remove(taskId);
+      setColumns((prev) => ({
+        ...prev,
+        [colId]: prev[colId].filter((task) => task.id !== taskId),
+      }));
+    } catch (error) {
+      console.error('Error eliminando tarea:', error);
+    }
   };
 
-  const handleRenameColumn = (oldKey: string, newName: string) => {
-    const newKey = normalizeColumnKey(newName);
-    if (!newKey || oldKey === newKey || columns[newKey]) return;
-
-    setColumns((prev) => {
-      const { [oldKey]: oldTasks, ...rest } = prev;
-      return { ...rest, [newKey]: oldTasks };
-    });
-
-    setColumnOrder((prev) => prev.map((k) => (k === oldKey ? newKey : k)));
+  const handleRenameColumn = async (colId: string, newTitle: string) => {
+    try {
+      const updated = await columnService.update(colId, { title: newTitle });
+      setColumnMeta((prev) => ({ ...prev, [colId]: updated }));
+    } catch (err) {
+      console.error('Error renombrando columna:', err);
+    }
   };
 
-  const deleteColumn = (key: string) => {
-    setColumns((prev) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [key]: _, ...rest } = prev;
-      return rest;
-    });
-
-    setColumnOrder((prev) => prev.filter((k) => k !== key));
+  const deleteColumn = async (colId: string) => {
+    try {
+      await columnService.remove(colId);
+      setColumns((prev) => {
+        const { [colId]: _, ...rest } = prev;
+        return rest;
+      });
+      setColumnMeta((prev) => {
+        const { [colId]: _, ...rest } = prev;
+        return rest;
+      });
+      setColumnOrder((prev) => prev.filter((id) => id !== colId));
+    } catch (err) {
+      console.error('Error eliminando columna:', err);
+    }
   };
 
-  const handleAddColumn = () => {
+  const handleAddColumn = async () => {
     if (!newColumnName.trim()) return;
-    const key = normalizeColumnKey(newColumnName);
-    if (columns[key]) return;
 
-    setColumns((prev) => ({
-      ...prev,
-      [key]: [],
-    }));
+    try {
+      const created = await columnService.create(newColumnName);
 
-    setColumnOrder((prev) => [...prev, key]);
-    setNewColumnName('');
-    setIsAddingColumn(false);
+      setColumns((prev) => ({
+        ...prev,
+        [created.id]: [],
+      }));
+      setColumnOrder((prev) => [...prev, created.id]);
+      setColumnMeta((prev) => ({ ...prev, [created.id]: created }));
+
+      setNewColumnName('');
+      setIsAddingColumn(false);
+    } catch (err) {
+      console.error('Error agregando columna:', err);
+    }
   };
 
-  const handleMoveColumn = (colName: string, direction: 'left' | 'right') => {
+  const handleMoveColumn = async (
+    colId: string,
+    direction: 'left' | 'right'
+  ) => {
     setColumnOrder((prev) => {
-      const index = prev.indexOf(colName);
+      const index = prev.indexOf(colId);
       const target = direction === 'left' ? index - 1 : index + 1;
       if (index < 0 || target < 0 || target >= prev.length) return prev;
-      return moveArrayItem(prev, index, target);
+
+      const newOrder = moveArrayItem(prev, index, target);
+      columnService.reorder(newOrder);
+      return newOrder;
     });
   };
 
   useEffect(() => {
-    const fetchTasks = async () => {
+    const fetchData = async () => {
       try {
-        const tasks = await taskService.getAll();
+        const [tasks, cols] = await Promise.all([
+          taskService.getAll(),
+          columnService.getAll(),
+        ]);
 
         const grouped: Columns = {};
-        const order: string[] = [];
+        const meta: Record<string, Column> = {};
+        const order = [...cols].sort((a, b) => a.position - b.position);
+
+        for (const col of order) {
+          grouped[col.id] = [];
+          meta[col.id] = col;
+        }
 
         for (const task of tasks) {
-          const colKey = task.completed ? 'done' : 'todo';
-          if (!grouped[colKey]) {
-            grouped[colKey] = [];
-            order.push(colKey);
+          if (grouped[task.columnId]) {
+            grouped[task.columnId].push(task);
           }
-          grouped[colKey].push(task);
         }
 
         setColumns(grouped);
-        setColumnOrder(order);
+        setColumnOrder(order.map((c) => c.id));
+        setColumnMeta(meta);
       } catch (error) {
-        console.error('Error fetching tasks:', error);
+        console.error('Error al cargar columnas y tareas:', error);
       }
     };
 
-    fetchTasks();
+    fetchData();
   }, []);
 
   return {
     columns,
     columnOrder,
+    columnMeta,
     selectedTask,
     setSelectedTask,
     uiState: {

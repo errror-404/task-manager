@@ -16,7 +16,7 @@ router.use(wrapAsync(authMiddleware));
 router.get('/', getAllTasks);
 router.post('/', wrapAsync(createTask));
 router.get('/:id', wrapAsync(getTaskById));
-router.put('/:id', wrapAsync(updateTask));
+router.patch('/:id', wrapAsync(updateTask));
 router.delete('/:id', wrapAsync(deleteTask));
 router.patch('/:id/toggle', wrapAsync(toggleTask));
 

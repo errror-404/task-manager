@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '../../../shared/components/Button';
 import { Card } from '../../../shared/components/Card';
 import { TextInput } from '../../../shared/components/TextInput';
-import { useRegister } from '../hooks/useRegister'; // nuevo hook personalizado
+import { useRegister } from '../hooks/useRegister';
 
 export const RegisterForm = () => {
   const { register, loading, error } = useRegister();

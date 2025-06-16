@@ -6,10 +6,8 @@ describe('Auth endpoints', () => {
   const testEmail = 'test@user.com';
 
   beforeAll(async () => {
-    // Limpia si ya existe ese email
     await prisma.user.deleteMany({ where: { email: testEmail } });
 
-    // Registra el usuario para login
     await request(app).post('/api/auth/register').send({
       email: testEmail,
       name: 'Test',
