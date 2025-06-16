@@ -5,6 +5,14 @@ import {
   updateTaskSchema,
 } from '../validators/task.validator';
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: { id: string; email: string };
+    }
+  }
+}
+
 export const getAllTasks = async (req: Request, res: Response) => {
   const userId = req.user?.id!;
   const tasks = await taskService.getTasks(userId);

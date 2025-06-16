@@ -1,8 +1,32 @@
-import { Card } from "../../../shared/components/Card";
-import { TextInput } from "../../../shared/components/TextInput";
-import { Button } from "../../../shared/components/Button";
+import { useState } from 'react';
+import { Button } from '../../../shared/components/Button';
+import { Card } from '../../../shared/components/Card';
+import { TextInput } from '../../../shared/components/TextInput';
+import { useRegister } from '../hooks/useRegister'; // nuevo hook personalizado
 
 export const RegisterForm = () => {
+  const { register, loading, error } = useRegister();
+
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const handleSubmit = () => {
+    if (form.password !== form.confirmPassword) {
+      alert('Las contraseñas no coinciden');
+      return;
+    }
+
+    register({
+      name: form.name,
+      email: form.email,
+      password: form.password,
+    });
+  };
+
   return (
     <>
       <Card.Header>
@@ -14,24 +38,47 @@ export const RegisterForm = () => {
 
       <Card.Body>
         <div className="space-y-4">
-          <TextInput label="Nombre completo" name="name" type="text" />
-          <TextInput label="Correo electrónico" name="email" type="email" />
-          <TextInput label="Contraseña" name="password" type="password" />
+          <TextInput
+            label="Nombre completo"
+            name="name"
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          <TextInput
+            label="Correo electrónico"
+            name="email"
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+          <TextInput
+            label="Contraseña"
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
           <TextInput
             label="Confirmar contraseña"
             name="confirmPassword"
             type="password"
+            value={form.confirmPassword}
+            onChange={(e) =>
+              setForm({ ...form, confirmPassword: e.target.value })
+            }
           />
+          {error && <p className="text-red-600 text-sm">{error}</p>}
         </div>
       </Card.Body>
 
       <Card.Footer>
         <div className="flex flex-col gap-3">
-          <Button onClick={() => console.log("Registrarse")}>
-            Registrarse
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Registrando...' : 'Registrarse'}
           </Button>
           <p className="text-center text-sm text-gray-500">
-            ¿Ya tienes una cuenta?{" "}
+            ¿Ya tienes una cuenta?{' '}
             <a href="/login" className="text-blue-600 hover:underline">
               Iniciar sesión
             </a>

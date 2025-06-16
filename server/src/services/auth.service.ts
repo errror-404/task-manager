@@ -1,6 +1,6 @@
-import prisma from "../utils/prisma";
-import bcrypt from "bcryptjs";
-import { signToken } from "../utils/jwt";
+import bcrypt from 'bcryptjs';
+import { signToken } from '../utils/jwt';
+import prisma from '../utils/prisma';
 
 interface RegisterInput {
   email: string;

@@ -6,7 +6,12 @@ import taskRoutes from './routes/task.routes';
 
 const app: Application = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // o tu frontend real en producción
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
