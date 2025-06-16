@@ -20,8 +20,8 @@ Este proyecto es un **monorepo** que contiene dos aplicaciones principales:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/task-manager-app.git
-cd task-manager-app
+git clone https://github.com/errror-404/task-manager.git
+cd task-manager
 ```
 
 ### 2. Instalar dependencias
