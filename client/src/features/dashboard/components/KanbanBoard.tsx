@@ -44,7 +44,7 @@ export const KanbanBoard: React.FC = () => {
         <div className="flex gap-2">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
             Nueva tarea

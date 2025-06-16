@@ -18,7 +18,11 @@ export const useRegister = () => {
   }) => {
     setLoading(true);
     setError(null);
-
+    if (!name || !email || !password) {
+      setError('Todos los campos son obligatorios');
+      setLoading(false);
+      return;
+    }
     try {
       const res = await axios.post(
         'http://localhost:3000/api/auth/register',
@@ -29,6 +33,7 @@ export const useRegister = () => {
       const token = res.data.token;
       loginToStore(token, email);
       window.location.href = '/';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('Error al registrarse:', err);
       setError(err.response?.data?.message || 'Error al registrarse');
