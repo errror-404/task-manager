@@ -1,6 +1,6 @@
-import { GripVertical, Trash2 } from "lucide-react";
-import { useState } from "react";
-import type { Task } from "../models/task.interface";
+import { CheckSquare, GripVertical, Square } from 'lucide-react';
+import { useState } from 'react';
+import type { Task } from '../models/task.interface';
 
 export const KanbanTask = ({
   task,
@@ -9,6 +9,7 @@ export const KanbanTask = ({
   onDelete,
   onDragEnter,
   onClick,
+  onToggleComplete,
 }: {
   task: Task;
   onDragStart: () => void;
@@ -16,6 +17,7 @@ export const KanbanTask = ({
   onEdit: (title: string) => void;
   onDelete: () => void;
   onClick?: () => void;
+  onToggleComplete: (completed: boolean) => void;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [input, setInput] = useState(task.title);
@@ -31,16 +33,34 @@ export const KanbanTask = ({
       onClick={onClick}
       onDragStart={onDragStart}
       onDragEnter={onDragEnter}
-      className="bg-white rounded p-3 mb-3 cursor-grab flex items-center gap-2"
+      className={`bg-white rounded p-3 mb-3 cursor-grab flex items-start gap-2 ${
+        task.completed ? 'opacity-60 line-through' : ''
+      }`}
     >
-      <GripVertical className="w-4 h-4 text-gray-400" />
+      <GripVertical className="w-4 h-4 text-gray-400 mt-1" />
+
+      <div
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleComplete(!task.completed);
+        }}
+        className="mt-1 cursor-pointer"
+        title="Marcar como completada"
+      >
+        {task.completed ? (
+          <CheckSquare className="w-4 h-4 text-green-600" />
+        ) : (
+          <Square className="w-4 h-4 text-gray-400" />
+        )}
+      </div>
+
       {isEditing ? (
         <input
           className="flex-1 border rounded px-2 text-sm"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onBlur={handleSave}
-          onKeyDown={(e) => e.key === "Enter" && handleSave()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSave()}
           autoFocus
         />
       ) : (
@@ -52,10 +72,10 @@ export const KanbanTask = ({
             {task.title}
           </span>
           <div className="text-xs text-gray-500">
-            {task.description || "Sin descripción"}
+            {task.description || 'Sin descripción'}
           </div>
           <div className="text-xs text-gray-500 mt-2">
-            Prioridad: {task.priority || "Media"}
+            Prioridad: {task.priority || 'Media'}
           </div>
           {task.dueDate && (
             <div className="text-xs text-gray-500 mt-1">
@@ -64,10 +84,6 @@ export const KanbanTask = ({
           )}
         </div>
       )}
-      <Trash2
-        onClick={onDelete}
-        className="w-4 h-4 text-gray-400 hover:text-red-600 cursor-pointer"
-      />
     </div>
   );
 };

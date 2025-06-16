@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from 'react';
 import type { Column } from '../models/column.interface';
 import type { NewTask, Task } from '../models/task.interface';
@@ -139,6 +140,25 @@ export const useKanbanBoard = () => {
     });
   };
 
+  const handleToggleComplete = async (
+    colId: string,
+    taskId: string,
+    checked: boolean
+  ) => {
+    try {
+      await taskService.update(taskId, { completed: checked });
+
+      setColumns((prev) => ({
+        ...prev,
+        [colId]: prev[colId].map((task) =>
+          task.id === taskId ? { ...task, completed: checked } : task
+        ),
+      }));
+    } catch (err) {
+      console.error('Error actualizando estado completado:', err);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -200,5 +220,6 @@ export const useKanbanBoard = () => {
     handleAddColumn,
     handleMoveColumn,
     setColumns,
+    handleToggleComplete,
   };
 };

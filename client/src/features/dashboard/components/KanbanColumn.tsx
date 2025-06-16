@@ -17,6 +17,7 @@ export const KanbanColumn = ({
   onMoveColumn,
   onDragEnter,
   onTaskClick,
+  onToggleComplete,
 }: {
   id: string;
   name: string;
@@ -31,6 +32,7 @@ export const KanbanColumn = ({
   onMoveColumn: (colId: string, direction: 'left' | 'right') => void;
   onDragEnter: (colId: string, overTaskId: string) => void;
   onTaskClick: (colId: string, task: Task) => void;
+  onToggleComplete: (colId: string, taskId: string, completed: boolean) => void;
 }) => {
   const [isRenaming, setIsRenaming] = useState(false);
   const [colNameInput, setColNameInput] = useState(name);
@@ -46,7 +48,7 @@ export const KanbanColumn = ({
     <div
       onDragOver={(e) => e.preventDefault()}
       onDrop={() => onDrop(id)}
-      className="flex-shrink-0 w-72 bg-gray-100 rounded p-4 min-h-[300px] shadow"
+      className="flex-shrink-0 w-[350px] bg-gray-100 rounded p-4 min-h-[300px] shadow"
     >
       <div className="flex items-center justify-between mb-4">
         {isRenaming ? (
@@ -103,6 +105,9 @@ export const KanbanColumn = ({
             onEdit={(newTitle) => onEdit(id, task.id, newTitle)}
             onDelete={() => onDelete(id, task.id)}
             onClick={() => onTaskClick(id, task)}
+            onToggleComplete={(checked) =>
+              onToggleComplete(id, task.id, checked)
+            }
           />
         ))}
     </div>

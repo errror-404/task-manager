@@ -24,6 +24,7 @@ export const KanbanBoard: React.FC = () => {
     handleAddColumn,
     handleMoveColumn,
     setColumns,
+    handleToggleComplete,
     uiState: {
       search,
       isModalOpen,
@@ -68,6 +69,9 @@ export const KanbanBoard: React.FC = () => {
             onDeleteColumn={deleteColumn}
             onMoveColumn={handleMoveColumn}
             onTaskClick={(col, task) => setSelectedTask({ col, task })}
+            onToggleComplete={(col, taskId, completed) =>
+              handleToggleComplete(col, taskId, completed)
+            }
           />
         ))}
 
