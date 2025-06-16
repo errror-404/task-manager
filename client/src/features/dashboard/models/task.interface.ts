@@ -3,9 +3,10 @@ export interface Task {
   title: string;
   description?: string;
   completed: boolean;
-  priority: "low" | "medium" | "high";
+  priority: 'low' | 'medium' | 'high';
   dueDate?: Date;
   userId: string;
+  status: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -14,7 +15,8 @@ export interface NewTask {
   title: string;
   description?: string;
   completed?: boolean;
-  priority?: "low" | "medium" | "high";
+  priority?: 'low' | 'medium' | 'high';
   dueDate?: Date;
   userId?: string;
+  status?: string;
 }

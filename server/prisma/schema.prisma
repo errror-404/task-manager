@@ -24,6 +24,7 @@ model Task {
   priority    String
   dueDate     DateTime?
   userId      String
+  status      String   @default("PENDING") 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

@@ -1,24 +1,18 @@
-import { useState } from "react";
-import type { Task, NewTask } from "../models/task.interface";
-import type { Columns } from "../models/columns";
-import { initialData } from "../constants/InitialData";
-import {
-  createTaskFromNewTask,
-  moveArrayItem,
-  normalizeColumnKey,
-} from "../utils";
-import { useDragAndDrop } from "./useDragAndDrop";
+import { useEffect, useState } from 'react';
+import type { Columns } from '../models/columns';
+import type { NewTask, Task } from '../models/task.interface';
+import { taskService } from '../services/taskService';
+import { moveArrayItem, normalizeColumnKey } from '../utils';
+import { useDragAndDrop } from './useDragAndDrop';
 
 export const useKanbanBoard = () => {
-  const [columns, setColumns] = useState<Columns>(initialData);
+  const [columns, setColumns] = useState<Columns>({});
+  const [columnOrder, setColumnOrder] = useState<string[]>([]);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newColumnName, setNewColumnName] = useState("");
+  const [newColumnName, setNewColumnName] = useState('');
   const [isAddingColumn, setIsAddingColumn] = useState(false);
-  const [columnOrder, setColumnOrder] = useState<string[]>(
-    Object.keys(initialData)
-  );
 
   const [selectedTask, setSelectedTask] = useState<{
     col: string;
@@ -30,13 +24,20 @@ export const useKanbanBoard = () => {
     setColumns
   );
 
-  const handleAddTask = (newTask: NewTask) => {
-    const fullTask = createTaskFromNewTask(newTask);
-    setColumns((prev) => ({
-      ...prev,
-      todo: [fullTask, ...prev.todo],
-    }));
-    setIsModalOpen(false);
+  const handleAddTask = async (newTask: NewTask) => {
+    try {
+      const taskFromServer = await taskService.createTask(newTask);
+      const key = taskFromServer.status || 'todo';
+
+      setColumns((prev) => ({
+        ...prev,
+        [key]: [taskFromServer, ...(prev[key] || [])],
+      }));
+
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error('Error al crear tarea:', err);
+    }
   };
 
   const handleEditTask = (col: string, id: string, newTitle: string) => {
@@ -90,18 +91,45 @@ export const useKanbanBoard = () => {
     }));
 
     setColumnOrder((prev) => [...prev, key]);
-    setNewColumnName("");
+    setNewColumnName('');
     setIsAddingColumn(false);
   };
 
-  const handleMoveColumn = (colName: string, direction: "left" | "right") => {
+  const handleMoveColumn = (colName: string, direction: 'left' | 'right') => {
     setColumnOrder((prev) => {
       const index = prev.indexOf(colName);
-      const target = direction === "left" ? index - 1 : index + 1;
+      const target = direction === 'left' ? index - 1 : index + 1;
       if (index < 0 || target < 0 || target >= prev.length) return prev;
       return moveArrayItem(prev, index, target);
     });
   };
+
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const tasks = await taskService.getAll();
+
+        const grouped: Columns = {};
+        const order: string[] = [];
+
+        for (const task of tasks) {
+          const colKey = task.completed ? 'done' : 'todo';
+          if (!grouped[colKey]) {
+            grouped[colKey] = [];
+            order.push(colKey);
+          }
+          grouped[colKey].push(task);
+        }
+
+        setColumns(grouped);
+        setColumnOrder(order);
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
+      }
+    };
+
+    fetchTasks();
+  }, []);
 
   return {
     columns,
