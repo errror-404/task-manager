@@ -1,17 +1,18 @@
-import prisma from "../utils/prisma";
+import prisma from '../utils/prisma';
 
 interface CreateTaskInput {
   title: string;
   description?: string;
-  priority: "low" | "medium" | "high";
+  priority: 'low' | 'medium' | 'high';
   dueDate?: string;
   userId: string;
+  columnId: string;
 }
 
 export async function getTasks(userId: string) {
   return await prisma.task.findMany({
     where: { userId },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: 'desc' },
   });
 }
 

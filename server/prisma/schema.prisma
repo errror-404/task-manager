@@ -14,6 +14,7 @@ model User {
   password  String
   createdAt DateTime @default(now())
   tasks     Task[]
+  columns   Column[]
 }
 
 model Task {
@@ -25,8 +26,21 @@ model Task {
   dueDate     DateTime?
   userId      String
   status      String   @default("PENDING") 
+  columnId    String
+  column      Column @relation(fields: [columnId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Column {
+  id        String   @id @default(uuid())
+  title     String
+  position  Int
+  userId    String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  tasks  Task[]
 }
